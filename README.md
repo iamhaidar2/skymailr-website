@@ -1,8 +1,8 @@
 # SkyMailr — marketing website
 
-The public site for **skymailr.com**. Hand-built static pages (HTML/CSS) served
-by a tiny Express app, so it runs as a **Node.js** site on Hostinger (or any
-Node host: Railway, Render, Fly, etc.).
+The public site for **skymailr.com**. Hand-built static pages (HTML/CSS).
+Hostinger serves `public/` as plain files; the tiny Express app in `server.js`
+is only for previewing the site locally.
 
 Branding: SkyMailr paper-plane logo on a **sky → blue → indigo** palette
 (`#38bdf8 → #3b82f6 → #4f46e5`).
@@ -19,28 +19,28 @@ npm start          # http://localhost:3000
 ## Project layout
 
 ```
-server.js          Express static server (binds to $PORT)
+server.js          Express static server for local preview (binds to $PORT)
 package.json       start / dev scripts, express dependency
 public/            the actual site
+  .htaccess   Hostinger rules: clean URLs, 404 page, headers, caching
   index.html  features.html  pricing.html  docs.html  404.html
   robots.txt  sitemap.xml
   assets/  styles.css  favicon.svg
 ```
 
-## Deploy on Hostinger (Node.js hosting)
+## Deploy (Hostinger, plain files)
 
-1. Push this repo (done) and connect it, or upload the files.
-2. In Hostinger's **Node.js app** setup:
-   - **Application root:** this folder.
-   - **Startup file:** `server.js`
-   - Run **`npm install`**, then start with **`npm start`**.
-   - Hostinger provides the port via the `PORT` env var — the server already
-     reads it, so no change needed.
-3. Point `skymailr.com` at the Node app.
+skymailr.com is a Hostinger web app connected to this repo with
+**Framework: Other**, **Build command: None**, **Output directory: `public`**
+and an empty **Entry file**. Every push to `main` publishes `public/` about
+15 seconds later. No Node process runs on the server: the hosting plan's
+process limit is shared by every site on it, and a running Node app uses
+about 11 of its 120.
 
-> The app listens on `process.env.PORT` and serves everything in `public/`.
-> Clean URLs work (`/features` → `features.html`); unknown paths return
-> `404.html`.
+`public/.htaccess` does on Hostinger what `server.js` does locally: clean URLs
+(`/features` serves `features.html`), `404.html` for unknown paths, the
+security headers, and cache times (pages, CSS and JS are re-checked on every
+visit, so a push shows up straight away).
 
 ## Editing content
 

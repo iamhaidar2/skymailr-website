@@ -1,0 +1,42 @@
+# skymailr.com runs on Hostinger as plain files: the web app is set to
+# Framework "Other", Output directory "public", no Entry file, so no Node
+# process runs on the server. These rules do what server.js does there;
+# server.js is only for previewing the site locally (npm start).
+
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+
+RewriteEngine On
+
+# Folders without an index page answer 404, like server.js.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html !-f
+RewriteRule ^ - [R=404,L]
+
+# Clean URLs: /features serves features.html (the .html address still works).
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
+
+# Hostinger caches files for 7 days by default; set our own times instead.
+<IfModule mod_expires.c>
+  ExpiresActive Off
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Pages, styles and scripts: browsers check for a newer copy on every visit,
+  # so a push to GitHub shows up straight away.
+  <FilesMatch "\.(html|css|js|xml|txt)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+  # Images and fonts: kept for a day.
+  <FilesMatch "\.(svg|png|jpe?g|webp|ico|woff2?)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>
